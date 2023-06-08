@@ -25,3 +25,44 @@ It returns in raster format (.tif) the Surface Albedo at 24h scale ("Alb_24"), N
 \description{
 Actual evapotranspiration (ETa) using Sentinel-2 images with single agrometeorological data.
 }
+\examples{
+library(agriwater)
+
+# dependencies of package 'agriwater'
+library(terra)
+
+
+# Using a temporary folder to run example
+wd <- tempdir()
+initial = getwd()
+setwd(wd)
+
+# creating raster which simulate Sentinel-2 reflectances - for using
+# real data, please download:
+# https://drive.google.com/open?id=14E1wHNLxG7_Dh4I-GqNYakj8YJDgKLzk
+
+xy <- matrix(rnorm(4, mean = 0.07, sd = 0.01), 2, 2)
+rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+writeRaster(rast, file.path(wd, "B2.tif"),filetype = "GTiff", overwrite=TRUE)
+xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+writeRaster(rast, file.path(wd, "B3.tif"),filetype = "GTiff", overwrite=TRUE)
+xy <- matrix(rnorm(4, mean = 0.03, sd = 0.018),2, 2)
+rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+writeRaster(rast, file.path(wd, "B4.tif"),filetype = "GTiff", overwrite=TRUE)
+xy <- matrix(rnorm(4, mean = 0.05, sd = 0.015),2, 2)
+rast <- rast(xy, crs="+proj=longlat +datum=WGS84")
+ext(rast) <- c(-40.5,-40.45,-9.5,-9.45)
+writeRaster(rast, file.path(wd, "B8.tif"),filetype = "GTiff", overwrite=TRUE)
+mask <- as.polygons(rast)
+writeVector(mask, file.path(getwd(),"mask.shp"), overwrite=TRUE)
+
+# using "agriwater"
+evapo_s2(doy = 134, RG = 17.6, Ta = 27.9, ET0 = 3.8, a = 1.8, b = -0.008)
+
+#Exiting temporary folder and returning to previous workspace
+setwd(initial)
+}
